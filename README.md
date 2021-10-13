@@ -6,3 +6,7 @@ This is a quick example of how to create "team cards" with R, `gt` and `RMarkdow
 Original Concept from [Dom at The Athletic](https://twitter.com/domluszczyszyn/status/1447937525591461889?s=20)
 
 ![Recreation of the team-cards from Dom](bruins-report.png)
+
+File to recreate is: [native-html.Rmd](native-html.Rmd)
+
+Screenshot w/ `webshot`: [webshot-code.R](webshot-code.R)
