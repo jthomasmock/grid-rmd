@@ -1,0 +1,209 @@
+---
+title: "&nbsp;"
+output: html_document
+classoption: landscape
+params:
+  team_rank: 4th
+  team_color: "#f2b643"
+  team_logo: https://upload.wikimedia.org/wikipedia/en/thumb/1/12/Boston_Bruins.svg/1200px-Boston_Bruins.svg.png
+  team_city: Boston
+  team_name: Bruins
+  exp_win: 58.9
+  proj_pts: 102.2
+  playoffs: 87
+  stanley_cup: 5.8
+  lw_rank: 2nd
+  c_rank: 13th
+  rw_rank: 4th
+  g_rank: 20th
+  ld_rank: 8th
+  rd_rank: 10th
+---
+
+<style type="text/css">
+.main-container {
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(gt)
+
+knitr::opts_chunk$set(
+  echo = FALSE
+)
+```
+
+
+<!-- <div style = 'text-align: center;background: '> -->
+
+:::: {style="display: grid; grid-template-columns: repeat(4, lfr); grid-auto-rows: 300px;"}
+
+::: {style="background:`r params$team_color`; grid-column-start: 1;grid-column-end:1;grid-row-start:1;grid-row-end:2"}
+
+<!-- :::: {style="display: grid; background: `r params$team_color`; grid-area:1 / col1-start / last-line/ 6"} -->
+
+## TEAM RANK: `r params$team_rank`
+
+<br>
+<br>
+
+```{r, echo=FALSE, out.width="25%"}
+knitr::include_graphics(params$team_logo)
+```
+
+<br>
+
+# `r params$team_city`
+# `r params$team_name`
+
+```{r, echo=FALSE}
+tibble(
+  metric = c("EXPECTED WIN %: ", "PROJ POINTS: ", "PLAYOFFS: ", "STANLEY CUP: "),
+  vals = c(params$exp_win, params$proj_pts, params$playoffs, params$stanley_cup)
+) %>% 
+  gt() %>% 
+  opt_table_lines("none") %>% 
+  cols_label(metric = "", vals = "") %>% 
+  cols_align("left", columns = 1) %>% 
+  cols_align("right", columns = 2) %>% 
+  tab_style(
+    style = cell_text(font = "Fira Mono", color = "white"),
+    locations = cells_body()
+  ) %>% 
+  tab_style(
+    style = cell_fill(alpha = 0),
+    locations = cells_body()
+  ) %>% 
+  fmt_percent(columns = vals, scale_values = FALSE, rows = c(1,3,4), decimals = 1) %>% 
+  fmt(columns = vals, rows = 2,
+      fns = function(x){
+        round(x, digits = 1) %>% paste0(., "&nbsp") %>% 
+          gt::html()
+      }) %>% 
+  tab_options(table.background.color = "#ff000000")
+```
+
+
+```{r, echo = FALSE}
+tibble(c1 = c("<br>STAR<br><br>", "<br>TOP<br><br>"),
+       c2 = c("<br>LEGEND<br><br>", "<br>MIDDLE<br><br>"),
+       c3 = c("<br>FRINGE<br><br>", "<br>BOTTOM<br><br>")) %>% 
+  mutate(c1 = purrr::map(c1, gt::html),
+         c2 = purrr::map(c2, gt::html),
+         c3 = purrr::map(c3, gt::html)) %>% 
+  gt() %>% 
+  tab_style(style = cell_borders(color = "white", weight = px(4)),
+            locations = cells_body()) %>% 
+  tab_style(style = cell_borders(color = "white", weight = px(4)),
+            locations = cells_column_labels()) %>% 
+  tab_style(style = list(
+    cell_fill(color = "#f8ba00"),
+    cell_text(color = "white", weight = "bold", font = "Fira Mono")),
+            locations = cells_body(1, 1)) %>% 
+  tab_style(style = list(
+    cell_fill(color = "white"),
+    cell_text(color = "black", weight = "bold", font = "Fira Mono")),
+            locations = cells_body(2, 1)) %>% 
+  tab_style(style = list(
+    cell_fill(color = "#fa998e"),
+    cell_text(color = "white", weight = "bold", font = "Fira Mono")),
+            locations = cells_body(3, 1)) %>% 
+  tab_style(style = list(
+    cell_fill(color = "black"),
+    cell_text(color = "white", weight = "bold", font = "Fira Mono")),
+            locations = cells_body(1, 2)) %>% 
+  tab_style(style = list(
+    cell_fill(color = "darkgrey"),
+    cell_text(color = "white", weight = "bold", font = "Fira Mono")),
+            locations = cells_body(2, 2)) %>% 
+  tab_style(style = list(
+    cell_fill(color = "lightgrey"),
+    cell_text(color = "white", weight = "bold", font = "Fira Mono")),
+            locations = cells_body(3, 2)) %>% 
+  cols_align("center") %>% 
+  cols_label(c1 = "", c2 = "", c3 = "") %>% 
+  tab_options(
+    table.border.top.color = "white",
+    column_labels.border.top.color = "white"
+  ) %>% 
+  cols_width(1 ~ px(90),
+             2 ~ px(90),
+             3 ~ px(90)) 
+```
+:::
+
+::::
+
+<!-- :::: {style="display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 10px;"} -->
+
+::: {style='grid-column-start: 2;grid-column-end:2;grid-row-start:1;grid-row-end:1;'}
+## LW `r params$lw_rank`
+
+```{r}
+# str(iris)
+```
+:::
+
+::: {style='grid-column-start: 3;grid-column-end:3;grid-row-start:1;grid-row-end:1;'}
+
+## LW `r params$c_rank`
+
+And this block will be put on the right:
+
+```{r}
+# plot(iris[, -5])
+```
+:::
+
+::: {style='grid-column-start: 4;grid-column-end:4;grid-row-start:1;grid-row-end:1;'}
+
+## LW `r params$rw_rank`
+
+And this block will be put on the right:
+
+```{r}
+# plot(iris[, -5])
+```
+:::
+
+<!-- :::: -->
+
+<!-- Bottom row -->
+
+<!-- :::: {style="display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 10px;"} -->
+
+::: {style='grid-column-start: 2;grid-column-end:2;grid-row-start:2;grid-row-end:2;'}
+## G `r params$g_rank`
+
+```{r}
+# str(iris)
+```
+:::
+
+::: {style='grid-column-start: 3;grid-column-end:3;grid-row-start:2;grid-row-end:2;'}
+
+## LD `r params$ld_rank`
+
+And this block will be put on the right:
+
+```{r}
+# plot(iris[, -5])
+```
+:::
+
+::: {style='grid-column-start: 4;grid-column-end:4;grid-row-start:2;grid-row-end:2;'}
+
+## RD `r params$rd_rank`
+
+And this block will be put on the right:
+
+```{r}
+# plot(iris[, -5])
+```
+:::
+
+::::

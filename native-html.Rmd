@@ -1,0 +1,374 @@
+---
+title: "&nbsp;"
+output: html_document
+classoption: landscape
+params:
+  team_rank: 4th
+  team_color: "#f2b643"
+  team_logo: "https://upload.wikimedia.org/wikipedia/en/thumb/1/12/Boston_Bruins.svg/1200px-Boston_Bruins.svg.png"
+  team_city: Boston
+  team_name: Bruins
+  exp_win: 58.9
+  proj_pts: 102.2
+  playoffs: 87
+  stanley_cup: 5.8
+  lw_rank: "2nd"
+  lw_play: !r c("BRAD MARCHAND", "TAYLOR HALL", "JAKE DEBRUSK", "TRENT FREDERIC")
+  lw_vals: !r c(4.4, 1.8, 0.9, -0.5)
+  c_rank: "13th"
+  c_play: !r c("PATRICE BERGERON", "CHARLIE COYLE", "ERIKA HAULA", "TOMAS NOSEK")
+  c_vals: !r c(3.6, 0.2, 0.2, 0.2)
+  rw_rank: "4th"
+  rw_play: !r c("DAVID PASTRNAK", "CRAIG SMITH", "NICK FOLIGNO", "KARSON KUHLMAN")
+  rw_vals: !r c(4.4, 1.8, 0.3, -0.0)
+  g_rank: "20th"
+  g_play: !r c("LINUS ULLMARK", "JEREMY SWAYMAN")
+  g_vals: !r c(1.0, 0.5)
+  ld_rank: "8th"
+  ld_play: !r c("DEREK FORBORT", "MIKE REILLY", "MATT GRZELCYK")
+  ld_vals: !r c(-0.1, 0.9, 1.9)
+  rd_rank: "10th"
+  rd_play: !r c("CHARLIE MCAVOY", "BRANDON CARLO", "CONNOR CLIFTON")
+  rd_vals: !r c(3.1, 0.3, -0.0)
+  off_ranks: !r c("1ST", "17TH", "14TH", "21ST")
+  def_ranks: !r c("14TH", "16TH", "1ST")
+  off_over_rk: "3RD"
+  def_over_rk: "8TH"
+---
+
+<style type="text/css">
+.main-container {
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(gt)
+
+knitr::opts_chunk$set(
+  echo = FALSE
+)
+
+tab_style_fill <- function(gt_data, fill, col_val){
+  gt_data %>% 
+    tab_style(list(cell_fill(color = fill),
+                   cell_text(color = "white", weight = "bold", 
+                             font = google_font("Fira Mono"))),
+              locations = cells_body(c2, rows = {{col_val}})
+    )
+}
+
+cell_table <- function(data, position, rank, end = FALSE) {
+  base_tab <- data %>%
+    gt() %>%
+    opt_table_outline(color = "white") %>%
+    tab_style(
+      style = cell_borders(
+        sides = c("bottom", "top"),
+        color = "white",
+        weight = px(4)
+      ),
+      locations = cells_body()
+    ) %>%
+    opt_table_font("Fira Mono") %>%
+    # cols_label(c1 = html("&nbsp"), c2 = html("&nbsp")) %>% 
+    cols_label(c1 = md(glue::glue("**{position}**")), 
+               c2 = md(glue::glue("*{rank}*"))) %>%
+    tab_style(style = cell_borders(sides = "bottom", 
+                                   weight = px(4), color = "black"),
+              locations = cells_column_labels()) %>% 
+    tab_style(
+      style = cell_text(
+        font = "Fira Mono",
+        size = px(24),
+        color = "white"
+      ),
+      locations = cells_body(c2)
+    ) %>% 
+    tab_style(
+      style = cell_text(
+        font = "Fira Mono",
+        size = px(18),
+        color = "black"
+      ),
+      locations = cells_body(c1)
+    ) %>% 
+    fmt(c2, fns = function(x){
+      scales::label_number(accuracy = 0.1)(x) %>% 
+        paste0("&nbsp")
+    } ) %>% 
+    cols_width(c1 ~ px(100), c2 ~ px(85)) %>% 
+    tab_style_fill(fill = "#f8ba00", col_val = c2 >= 3) %>% 
+    tab_style_fill(fill = "#fa998e", col_val = c2 < 0) %>% 
+    tab_style_fill(fill = "black", col_val = between(c2, 1, 3)) %>% 
+    tab_style_fill(fill = "darkgrey", col_val = between(c2, 0.301, 1)) %>% 
+    tab_style_fill(fill = "lightgrey", col_val = between(c2, 0, 0.3)) %>% 
+    tab_options(heading.align = "center",
+                column_labels.font.size = px(26))
+  
+  if(isTRUE(end)){
+    base_tab %>% 
+          tab_style(style = cell_borders(sides = c("bottom", "right"), 
+                                   weight = px(4), color = "black"),
+              locations = cells_column_labels(c2)) 
+  } else {
+    base_tab
+  }
+}
+
+cell_table_end <- function(data, position, rank, c3_lab, right_col = "c3") {
+  data %>%
+    gt() %>%
+    opt_table_outline(color = "white") %>%
+    tab_style(
+      style = cell_borders(
+        sides = c("bottom", "top"),
+        color = "white",
+        weight = px(4)
+      ),
+      locations = cells_body()
+    ) %>%
+    opt_table_font("Fira Mono") %>%
+    # cols_label(c1 = html("&nbsp"), c2 = html("&nbsp")) %>% 
+    cols_label(c1 = md(glue::glue("**{position}**")), 
+               c2 = md(glue::glue("*{rank}*")),
+               c3  = md(glue::glue("**{c3_lab}**"))) %>%
+    tab_style(style = cell_borders(sides = "bottom", 
+                                   weight = px(4), color = "black"),
+              locations = cells_column_labels(columns = c1:last_col())) %>% 
+    tab_style(style = cell_borders(sides = c("bottom", "right"), 
+                                   weight = px(4), color = "black"),
+              locations = cells_column_labels(any_of(right_col))) %>% 
+    tab_style(
+      style = cell_text(
+        font = "Fira Mono",
+        size = px(24),
+        color = "white"
+      ),
+      locations = cells_body(c2)
+    ) %>% 
+    tab_style(
+      style = cell_text(
+        font = "Fira Mono",
+        size = px(18),
+        color = "black"
+      ),
+      locations = cells_body(c1)
+    ) %>% 
+    tab_style(
+      style = cell_text(
+        font = google_font("Fira Sans"),
+        size = px(18),
+        style = "italic",
+        color = "black"
+      ),
+      locations = cells_body(c3)
+    ) %>% 
+    fmt(c2, fns = function(x){
+      scales::label_number(accuracy = 0.1)(x) %>% 
+        paste0("&nbsp")
+    } ) %>% 
+    cols_align("right", c3) %>% 
+    cols_width(c1 ~ px(100), c2 ~ px(85), c3 ~ px(80)) %>% 
+    tab_style_fill(fill = "#f8ba00", col_val = c2 >= 3) %>% 
+    tab_style_fill(fill = "#fa998e", col_val = c2 < 0) %>% 
+    tab_style_fill(fill = "black", col_val = between(c2, 1, 3)) %>% 
+    tab_style_fill(fill = "darkgrey", col_val = between(c2, 0.5, 1)) %>% 
+    tab_style_fill(fill = "lightgrey", col_val = between(c2, 0, 1)) %>% 
+    tab_options(heading.align = "center",
+                column_labels.font.size = px(28))
+}
+```
+
+<div class = "row" style = 'column-gap:15px'>
+
+<div class = "col-md-1" style ="column-gap: 5%;">
+<!-- Empty Div for spacing -->
+</div>
+
+<div class = "col-md-2" style = "text-align: center;background: `r params$team_color`; border-left-width: 25px;border-right-width: 25px;border-left-color: white;border-right-color: white;column-gap: 5%;">
+
+### TEAM RK: `r params$team_rank`
+
+```{r, echo=FALSE, out.width="45%"}
+knitr::include_graphics(params$team_logo)
+```
+
+
+# `r params$team_city`<br>`r params$team_name`
+
+```{r, echo=FALSE}
+tibble(
+  metric = c("EXPECTED WIN %: ", "PROJ POINTS: ", "PLAYOFFS: ", "STANLEY CUP: "),
+  vals = c(params$exp_win, params$proj_pts, params$playoffs, params$stanley_cup)
+) %>% 
+  gt() %>% 
+  opt_table_lines("none") %>% 
+  cols_label(metric = "", vals = "") %>% 
+  cols_align("left", columns = 1) %>% 
+  cols_align("right", columns = 2) %>% 
+  tab_style(
+    style = cell_text(font = "Fira Mono", color = "white", weight = "bold",
+                      size = px(14)),
+    locations = cells_body()
+  ) %>% 
+  tab_style(
+    style = cell_fill(alpha = 0),
+    locations = cells_body()
+  ) %>% 
+  fmt_percent(columns = vals, scale_values = FALSE, rows = c(1,3,4), decimals = 1) %>% 
+  fmt(columns = vals, rows = 2,
+      fns = function(x){
+        round(x, digits = 1) %>% paste0(., "&nbsp") %>% 
+          gt::html()
+      }) %>% 
+  tab_options(table.background.color = "#ff000000")
+```
+
+</div>
+
+
+<div class = "col-md-2" style='text-align: center;column-gap: 5%;'>
+<!-- ## LW `r params$lw_rank` -->
+
+```{r}
+tibble(
+  c1 = params$lw_play,
+  c2 = params$lw_vals
+) %>% cell_table("LW", params$lw_rank)
+```
+
+</div>
+
+<div class = "col-md-2" style='text-align: center;column-gap: 5%;'>
+<!-- ## LW `r params$c_rank` -->
+
+```{r}
+tibble(
+  c1 = params$c_play,
+  c2 = params$c_vals
+) %>% cell_table("C", params$c_rank)
+```
+</div>
+
+<div class = "col-md-3" style='text-align: center;column-gap: 5%;'>
+
+<!-- ## LW `r params$rw_rank` -->
+
+```{r}
+tibble(
+  c1 = params$rw_play,
+  c2 = params$rw_vals,
+  c3 = params$off_ranks
+) %>% cell_table_end("RW", params$rw_rank, params$off_over_rk, "c3")
+```
+</div>
+
+</div>
+
+<div class = "row" style = 'column-gap:15px'>
+
+<div class = "col-md-1" style ="column-gap: 5%;column-gap: 5%;">
+<!-- Empty Div for spacing -->
+</div>
+
+<div class = 'col-md-2'>
+
+<br>
+<br>
+<br>
+
+```{r, echo = FALSE}
+tibble(c1 = c("STAR", "TOP"),
+       c2 = c("LEGEND", "MIDDLE"),
+       c3 = c("FRINGE", "BOTTOM")) %>% 
+  mutate(c1 = purrr::map(c1, gt::html),
+         c2 = purrr::map(c2, gt::html),
+         c3 = purrr::map(c3, gt::html)) %>% 
+  gt() %>% 
+  tab_style(style = cell_borders(color = "white", weight = px(4)),
+            locations = cells_body()) %>% 
+  tab_style(style = cell_borders(color = "white", weight = px(4)),
+            locations = cells_column_labels()) %>% 
+  tab_style(style = list(
+    cell_fill(color = "#f8ba00"),
+    cell_text(color = "white", weight = "bold", font = "Fira Mono")),
+            locations = cells_body(1, 1)) %>% 
+  tab_style(style = list(
+    cell_fill(color = "white"),
+    cell_text(color = "black", weight = "bold", font = "Fira Mono")),
+            locations = cells_body(2, 1)) %>% 
+  tab_style(style = list(
+    cell_fill(color = "#fa998e"),
+    cell_text(color = "white", weight = "bold", font = "Fira Mono")),
+            locations = cells_body(3, 1)) %>% 
+  tab_style(style = list(
+    cell_fill(color = "black"),
+    cell_text(color = "white", weight = "bold", font = "Fira Mono")),
+            locations = cells_body(1, 2)) %>% 
+  tab_style(style = list(
+    cell_fill(color = "darkgrey"),
+    cell_text(color = "white", weight = "bold", font = "Fira Mono")),
+            locations = cells_body(2, 2)) %>% 
+  tab_style(style = list(
+    cell_fill(color = "lightgrey"),
+    cell_text(color = "white", weight = "bold", font = "Fira Mono")),
+            locations = cells_body(3, 2)) %>% 
+  cols_align("center") %>% 
+  cols_label(c1 = "", c2 = "", c3 = "") %>% 
+  tab_options(
+    table.border.top.color = "white",
+    column_labels.border.top.color = "white",
+    data_row.padding = px(20),
+    table.font.size = px(14)
+  ) %>% 
+  cols_width(1 ~ px(65),
+             2 ~ px(65),
+             3 ~ px(65)) 
+```
+
+</div>
+
+<div class = "col-md-2" style='text-align: center;column-gap: 5%;'>
+<!-- ## G `r params$g_rank` -->
+
+```{r}
+tibble(
+  c1 = params$g_play,
+  c2 = params$g_vals
+) %>% cell_table("G", params$g_rank, end = TRUE)
+```
+</div>
+
+<div class = "col-md-2" style='text-align: center;column-gap: 5%;'>
+
+<!-- ## LD `r params$ld_rank` -->
+
+```{r}
+tibble(
+  c1 = params$ld_play,
+  c2 = params$ld_vals
+) %>% cell_table("LD", params$ld_rank)
+```
+</div>
+
+<div class = "col-md-3" style='text-align: center;column-gap: 5%;'>
+
+<!-- ## RD `r params$rd_rank` -->
+
+```{r}
+tibble(
+  c1 = params$rd_play,
+  c2 = params$rd_vals,
+  c3 = params$def_ranks
+) %>% cell_table_end("RD", params$rd_rank, params$def_over_rk, "c3")
+```
+
+</div>
+
+</div>
+
+<!-- </div> -->

@@ -1,0 +1,23 @@
+---
+output: html_document
+---
+
+:::: {style="display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 10px;"}
+
+::: {}
+Here is the **first** Div.
+
+```{r}
+str(iris)
+```
+:::
+
+::: {}
+And this block will be put on the right:
+
+```{r}
+plot(iris[, -5])
+```
+:::
+
+::::
